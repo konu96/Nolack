@@ -1,46 +1,95 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/slack-go/slack"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
+	"github.com/slack-go/slack"
+	"github.com/slack-go/slack/slackevents"
 )
 
-//EV put new slack events
-var EV *slack.MessageEvent
-
-//RTM use for sending events to slack
-var RTM *slack.RTM
-
-//BotToken Put your slackbot token here
-const BotToken string = "YOUR_TOKEN"
-
-//DefaultChannel Put your default channel
-const DefaultChannel string = "#YOUR_Channel"
-
 func main() {
-	var api *slack.Client = slack.New(BotToken)
+	// .envの読み取り
+	godotenv.Load(fmt.Sprintf("./%s.env", os.Getenv("GO_ENV")))
 
-	RTM = api.NewRTM()
+	// SlackClientの構築
+	api := slack.New(os.Getenv("SLACK_BOT_TOKEN"))
 
-	go RTM.ManageConnection()
-
-	for msg := range RTM.IncomingEvents {
-		switch ev := msg.Data.(type) {
-		case *slack.ConnectedEvent:
-			fmt.Printf("Start connection with Slack\n")
-		case *slack.MessageEvent:
-			EV = ev
-			ListenTo()
+	// ルートにアクセスがあった時の処理
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// リクエスト内容を取得
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-	}
-}
 
-//ListenTo excute functions under suitable conditions
-func ListenTo() {
-	switch {
-	case strings.Contains("こんにちは", EV.Text):
-		RTM.SendMessage(RTM.NewOutgoingMessage("こんにちは。", EV.Channel))
-		return
+		// イベント内容を取得
+		eventsAPIEvent, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionNoVerifyToken())
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// イベント内容によって処理を分岐
+		switch eventsAPIEvent.Type {
+		case slackevents.URLVerification: // URL検証の場合の処理
+			var res *slackevents.ChallengeResponse
+			if err := json.Unmarshal(body, &res); err != nil {
+				log.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "text/plain")
+			if _, err := w.Write([]byte(res.Challenge)); err != nil {
+				log.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		case slackevents.CallbackEvent: // コールバックイベントの場合の処理
+			innerEvent := eventsAPIEvent.InnerEvent
+
+			// イベントタイプで分岐
+			switch event := innerEvent.Data.(type) {
+			case *slackevents.AppMentionEvent: // メンションイベント
+
+				// スペースを区切り文字として配列に格納
+				message := strings.Split(event.Text, " ")
+
+				// テキストが送信されていない場合は終了
+				if len(message) < 2 {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+
+				// 送信されたテキストを取得
+				command := message[1]
+
+				// 送信元のユーザIDを取得
+				user := event.User
+
+				switch command {
+				case "hello": // helloが送られた場合
+					if _, _, err := api.PostMessage(event.Channel, slack.MsgOptionText("<@"+user+"> world", false)); err != nil {
+						log.Println(err)
+						w.WriteHeader(http.StatusInternalServerError)
+						return
+					}
+				}
+			}
+		}
+	})
+
+	log.Println("[INFO] Server listening")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
 	}
 }
