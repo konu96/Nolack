@@ -6,15 +6,17 @@ import (
 	"github.com/slack-go/slack/slackevents"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
 type CallbackEventInteractor struct {
+	slack.Slack
 }
 
-func NewCallbackEventInteractor() CallbackEventInteractor {
-	return CallbackEventInteractor{}
+func NewCallbackEventInteractor(slack slack.Slack) CallbackEventInteractor {
+	return CallbackEventInteractor{
+		slack,
+	}
 }
 
 func (i *CallbackEventInteractor) Exec(w http.ResponseWriter, event slackevents.EventsAPIEvent) {
@@ -31,10 +33,9 @@ func (i *CallbackEventInteractor) Exec(w http.ResponseWriter, event slackevents.
 		command := message[1]
 		user := event.User
 
-		sl := slack.NewSlack(slackGo.New(os.Getenv("SLACK_BOT_TOKEN")))
 		switch command {
 		case "hello":
-			if _, _, err := sl.Client.PostMessage(event.Channel, slackGo.MsgOptionText("<@"+user+"> world", false)); err != nil {
+			if _, _, err := i.Client.PostMessage(event.Channel, slackGo.MsgOptionText("<@"+user+"> world", false)); err != nil {
 				log.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return

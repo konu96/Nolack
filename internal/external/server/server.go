@@ -13,9 +13,9 @@ type Server struct {
 	controller interfaces.Controller
 }
 
-func NewServer() Server {
+func NewServer(controller interfaces.Controller) Server {
 	return Server{
-		controller: interfaces.NewController(),
+		controller: controller,
 	}
 }
 
