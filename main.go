@@ -15,15 +15,13 @@ import (
 )
 
 func main() {
-	// .envの読み取り
-	godotenv.Load(fmt.Sprintf("./%s.env", os.Getenv("GO_ENV")))
+	if err := godotenv.Load(fmt.Sprintf("./%s.env", os.Getenv("GO_ENV"))); err != nil {
+		log.Fatalf("%s.env not found.", os.Getenv("GO_ENV"))
+		return
+	}
 
-	// SlackClientの構築
 	api := slack.New(os.Getenv("SLACK_BOT_TOKEN"))
-
-	// ルートにアクセスがあった時の処理
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// リクエスト内容を取得
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Println(err)
@@ -31,7 +29,6 @@ func main() {
 			return
 		}
 
-		// イベント内容を取得
 		eventsAPIEvent, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionNoVerifyToken())
 		if err != nil {
 			log.Println(err)
@@ -39,9 +36,8 @@ func main() {
 			return
 		}
 
-		// イベント内容によって処理を分岐
 		switch eventsAPIEvent.Type {
-		case slackevents.URLVerification: // URL検証の場合の処理
+		case slackevents.URLVerification:
 			var res *slackevents.ChallengeResponse
 			if err := json.Unmarshal(body, &res); err != nil {
 				log.Println(err)
@@ -54,30 +50,22 @@ func main() {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-		case slackevents.CallbackEvent: // コールバックイベントの場合の処理
+		case slackevents.CallbackEvent:
 			innerEvent := eventsAPIEvent.InnerEvent
 
-			// イベントタイプで分岐
 			switch event := innerEvent.Data.(type) {
-			case *slackevents.AppMentionEvent: // メンションイベント
-
-				// スペースを区切り文字として配列に格納
+			case *slackevents.AppMentionEvent:
 				message := strings.Split(event.Text, " ")
-
-				// テキストが送信されていない場合は終了
 				if len(message) < 2 {
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				}
 
-				// 送信されたテキストを取得
 				command := message[1]
-
-				// 送信元のユーザIDを取得
 				user := event.User
 
 				switch command {
-				case "hello": // helloが送られた場合
+				case "hello":
 					if _, _, err := api.PostMessage(event.Channel, slack.MsgOptionText("<@"+user+"> world", false)); err != nil {
 						log.Println(err)
 						w.WriteHeader(http.StatusInternalServerError)
