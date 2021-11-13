@@ -17,7 +17,7 @@ type Controller struct {
 
 func NewController(slack slack.Slack) Controller {
 	return Controller{
-		VerifyURLInteractor: usecases.NewVerifyURLInteractor(),
+		VerifyURLInteractor:     usecases.NewVerifyURLInteractor(),
 		CallbackEventInteractor: usecases.NewCallbackEventInteractor(slack),
 	}
 }
