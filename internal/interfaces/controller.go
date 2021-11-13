@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"encoding/json"
+	"github.com/konu96/Nolack/internal/external/notion"
 	"github.com/konu96/Nolack/internal/external/slack"
 	"github.com/konu96/Nolack/internal/usecases"
 	"github.com/slack-go/slack/slackevents"
@@ -18,7 +19,7 @@ type Controller struct {
 func NewController(slack slack.Slack) Controller {
 	return Controller{
 		VerifyURLInteractor:     usecases.NewVerifyURLInteractor(),
-		CallbackEventInteractor: usecases.NewCallbackEventInteractor(slack),
+		CallbackEventInteractor: usecases.NewCallbackEventInteractor(slack, notion.NewNotion()),
 	}
 }
 

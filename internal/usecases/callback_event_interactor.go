@@ -12,10 +12,11 @@ type CallbackEventInteractor struct {
 	CreatePageInteractor CreatePageInteractor
 }
 
-func NewCallbackEventInteractor(slack slack.Slack) CallbackEventInteractor {
+func NewCallbackEventInteractor(slack slack.Slack, notion NotionInterface) CallbackEventInteractor {
 	return CallbackEventInteractor{
 		CreatePageInteractor: CreatePageInteractor{
-			slack,
+			Slack:  slack,
+			Notion: notion,
 		},
 	}
 }
