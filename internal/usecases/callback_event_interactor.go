@@ -1,21 +1,22 @@
 package usecases
 
 import (
+	"github.com/konu96/Nolack/internal/domain/data"
 	"github.com/konu96/Nolack/internal/external/slack"
-	slackGo "github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
-	"log"
 	"net/http"
 	"strings"
 )
 
 type CallbackEventInteractor struct {
-	slack.Slack
+	CreatePageInteractor CreatePageInteractor
 }
 
 func NewCallbackEventInteractor(slack slack.Slack) CallbackEventInteractor {
 	return CallbackEventInteractor{
-		slack,
+		CreatePageInteractor: CreatePageInteractor{
+			slack,
+		},
 	}
 }
 
@@ -30,16 +31,11 @@ func (i *CallbackEventInteractor) Exec(w http.ResponseWriter, event slackevents.
 			return
 		}
 
-		command := message[1]
-		user := event.User
+		c := data.Command(message[1])
 
-		switch command {
-		case "hello":
-			if _, _, err := i.Client.PostMessage(event.Channel, slackGo.MsgOptionText("<@"+user+"> world", false)); err != nil {
-				log.Println(err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
+		switch c {
+		case data.Create:
+			i.CreatePageInteractor.Exec(w, event.Channel)
 		}
 	}
 }
