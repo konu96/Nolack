@@ -1,7 +1,6 @@
 package dto
 
 type Parent struct {
-	Type   string `json:"type"`
 	PageID string `json:"page_id"`
 }
 
@@ -14,9 +13,27 @@ type Cover struct {
 	External External `json:"external"`
 }
 
+type TitleContent struct {
+	Content string `json:"content"`
+}
+
+type TitleInTitle struct {
+	Type string       `json:"type"`
+	Text TitleContent `json:"text"`
+}
+
+type Title struct {
+	Title []TitleInTitle `json:"title"`
+}
+
+type Properties struct {
+	Title Title `json:"title"`
+}
+
 type PostRequest struct {
-	Parent Parent `json:"parent"`
-	Cover  Cover  `json:"cover"`
+	Parent     Parent     `json:"parent"`
+	Cover      Cover      `json:"cover"`
+	Properties Properties `json:"properties"`
 }
 
 type PostResponse struct {

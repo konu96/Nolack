@@ -3,6 +3,7 @@ package notion
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/konu96/Nolack/internal/usecases/dto"
 	"io/ioutil"
 	"log"
@@ -24,13 +25,13 @@ func NewNotion() Notion {
 }
 
 func (n Notion) POST(data []byte) (*dto.PostResponse, error) {
-	request, err := http.NewRequest("POST", NOTION_PAGE, bytes.NewBuffer(data))
+	request, err := http.NewRequest("POST", NOTION_PAGE, bytes.NewReader(data))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	request.Header.Add("Authorization", "Bearer "+os.Getenv("NOTION_TOKEN"))
-	request.Header.Add("Notion-Version", NOTION_VERSION)
+	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("NOTION_TOKEN")))
+	request.Header.Set("Notion-Version", NOTION_VERSION)
 	request.Header.Set("Content-Type", "application/json")
 
 	resp, err := n.Client.Do(request)
