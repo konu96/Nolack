@@ -2,16 +2,15 @@ package usecases
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/konu96/Nolack/internal/external/slack"
 	"github.com/konu96/Nolack/internal/usecases/dto"
-	"log"
-	"net/http"
 )
 
-const pageID = "d364bd662bb0425480c899699de4e4cb"
+const pageID = "263a6b171e8049acbecb821b492bfad3"
 
 type NotionInterface interface {
-	POST(data []byte) (dto.PostResponse, error)
+	POST(data []byte) (*dto.PostResponse, error)
 }
 
 type CreatePageInteractor struct {
@@ -26,7 +25,7 @@ func NewCreatePageInteractor(slack slack.Slack, notion NotionInterface) CreatePa
 	}
 }
 
-func (i *CreatePageInteractor) Exec(w http.ResponseWriter, channel string) {
+func (i *CreatePageInteractor) Exec(channel string) error {
 	page := dto.PostRequest{
 		Parent: dto.Parent{
 			Type:   "page_id",
@@ -38,16 +37,14 @@ func (i *CreatePageInteractor) Exec(w http.ResponseWriter, channel string) {
 		},
 	}
 
-	aaa, err := json.Marshal(page)
+	marshaledJSON, err := json.Marshal(page)
 	if err != nil {
-		log.Printf("can not marshal json: %s", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return fmt.Errorf("failed to marshal json: %w", err)
 	}
 
-	if _, err := i.Notion.POST(aaa); err != nil {
-		log.Printf("can not post: %s", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	if _, err := i.Notion.POST(marshaledJSON); err != nil {
+		return fmt.Errorf("failed to missing post: %w", err)
 	}
+
+	return nil
 }

@@ -36,7 +36,10 @@ func (i *CallbackEventInteractor) Exec(w http.ResponseWriter, event slackevents.
 
 		switch c {
 		case data.Create:
-			i.CreatePageInteractor.Exec(w, event.Channel)
+			if err := i.CreatePageInteractor.Exec(event.Channel); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 }

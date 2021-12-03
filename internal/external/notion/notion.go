@@ -23,7 +23,7 @@ func NewNotion() Notion {
 	}
 }
 
-func (n Notion) POST(data []byte) (dto.PostResponse, error) {
+func (n Notion) POST(data []byte) (*dto.PostResponse, error) {
 	request, err := http.NewRequest("POST", NOTION_PAGE, bytes.NewBuffer(data))
 	if err != nil {
 		log.Fatal(err)
@@ -41,13 +41,13 @@ func (n Notion) POST(data []byte) (dto.PostResponse, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return dto.PostResponse{}, err
+		return nil, err
 	}
 
 	var page dto.PostResponse
 	if err := json.Unmarshal(body, &page); err != nil {
-		return dto.PostResponse{}, err
+		return nil, err
 	}
 
-	return page, nil
+	return &page, nil
 }
