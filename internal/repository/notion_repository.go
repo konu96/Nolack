@@ -51,7 +51,6 @@ func (r *NotionRepository) CreatePage(page dto.CreatePageRequest) (*dto.CreatePa
 
 	var postResponse dto.CreatePageResponse
 	if err := json.Unmarshal(body, &postResponse); err != nil {
-		fmt.Println(string(body))
 		return nil, nil, err
 	}
 

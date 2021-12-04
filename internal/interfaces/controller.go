@@ -1,7 +1,6 @@
 package interfaces
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/konu96/Nolack/internal/external/notion"
 	"github.com/konu96/Nolack/internal/external/slack"
@@ -31,7 +30,7 @@ func (c *Controller) Exec(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	event, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionNoVerifyToken())
+	event, err := slackevents.ParseEvent(body, slackevents.OptionNoVerifyToken())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return err
@@ -45,8 +44,9 @@ func (c *Controller) Exec(w http.ResponseWriter, r *http.Request) error {
 		}
 
 	case slackevents.CallbackEvent:
-		if err := c.CallbackEventInteractor.Exec(w, event); err != nil {
-			return fmt.Errorf("callback event: %w", err)
+		if err := c.CallbackEventInteractor.Exec(event); err != nil {
+			w.WriteHeader(err.StatusCode)
+			return fmt.Errorf("callback event: %w", err.Err)
 		}
 	}
 

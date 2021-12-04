@@ -20,22 +20,31 @@ func NewCallbackEventInteractor(slack *slack.Slack, notionRepository repository.
 	}
 }
 
-func (i *CallbackEventInteractor) Exec(w http.ResponseWriter, event slackevents.EventsAPIEvent) error {
+type Error struct {
+	StatusCode int
+	Err        error
+}
+
+func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error {
 	innerEvent := event.InnerEvent
 
 	switch event := innerEvent.Data.(type) {
 	case *slackevents.AppMentionEvent:
 		message := strings.Split(event.Text, " ")
 		if len(message) < 2 {
-			w.WriteHeader(http.StatusBadRequest)
-			return fmt.Errorf("missing argument: want 2 argumets but got %d", len(message))
+			return &Error{
+				StatusCode: http.StatusBadRequest,
+				err:        fmt.Errorf("missing argument: want 2 argumets but got %d", len(message)),
+			}
 		}
 
 		switch data.Command(message[1]) {
 		case data.Create:
 			if err := i.CreatePageInteractor.Exec(event.Channel); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				return err
+				return &Error{
+					StatusCode: http.StatusInternalServerError,
+					err:        err,
+				}
 			}
 		}
 	}
