@@ -41,3 +41,10 @@ type PostResponse struct {
 	Object string `json:"object"`
 	Cover  Cover  `json:"cover"`
 }
+
+type PostErrorResponse struct {
+	Object string `json:"object"`
+	Status int `json:"status"`
+	Code string `json:"code"`
+	Message string `json:"message"`
+}
