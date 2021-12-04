@@ -36,7 +36,7 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 		if len(messages) < requestMessageCount {
 			return &Error{
 				StatusCode: http.StatusBadRequest,
-				Err:        fmt.Errorf("missing argument: want %d argumets but got %d", requestMessageCount, len(message)),
+				Err:        fmt.Errorf("missing argument: want %d argumets but got %d", requestMessageCount, len(messages)),
 			}
 		}
 
