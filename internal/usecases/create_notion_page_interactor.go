@@ -20,7 +20,7 @@ func NewCreatePageInteractor(slack *slack.Slack, NotionRepository repository.Not
 	}
 }
 
-func (i *CreateNotionPageInteractor) Exec(channel string, input dto.PageInput) error {
+func (i *CreateNotionPageInteractor) Exec(channel string, input dto.CreatePageInput) error {
 	page := entity.NewPage(input.PageID, input.URL)
 
 	if _, _, err := i.NotionRepository.CreatePage(page); err != nil {

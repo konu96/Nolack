@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/konu96/Nolack/internal/domain/entity"
-	"github.com/konu96/Nolack/internal/repository/dto"
+	notiondto "github.com/konu96/Nolack/internal/repository/dto/notion"
 	"io/ioutil"
 	"net/http"
 )
@@ -23,7 +23,7 @@ func NewNotionRepository(client NotionInterface) *NotionRepository {
 	}
 }
 
-func (r *NotionRepository) CreatePage(page entity.Page) (*dto.CreatePageResponse, *dto.CreatePageErrorResponse, error) {
+func (r *NotionRepository) CreatePage(page entity.Page) (*notiondto.CreatePageResponse, *notiondto.CreatePageErrorResponse, error) {
 	marshaledJSON, err := json.Marshal(page)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to marshal json: %w", err)
@@ -42,7 +42,7 @@ func (r *NotionRepository) CreatePage(page entity.Page) (*dto.CreatePageResponse
 	}
 
 	if resp.StatusCode != 200 {
-		var errorResponse dto.CreatePageErrorResponse
+		var errorResponse notiondto.CreatePageErrorResponse
 		if err := json.Unmarshal(body, &errorResponse); err != nil {
 			return nil, nil, err
 		}
@@ -50,7 +50,7 @@ func (r *NotionRepository) CreatePage(page entity.Page) (*dto.CreatePageResponse
 		return nil, &errorResponse, err
 	}
 
-	var postResponse dto.CreatePageResponse
+	var postResponse notiondto.CreatePageResponse
 	if err := json.Unmarshal(body, &postResponse); err != nil {
 		return nil, nil, err
 	}

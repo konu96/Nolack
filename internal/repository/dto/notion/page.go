@@ -1,4 +1,4 @@
-package dto
+package notion_dto
 
 type CreatePageResponse struct {
 	ID     string `json:"id"`
