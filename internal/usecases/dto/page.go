@@ -1,6 +1,6 @@
 package dto
 
-type PageInput struct {
+type CreatePageInput struct {
 	PageID string
 	URL    string
 }

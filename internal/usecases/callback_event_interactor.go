@@ -42,7 +42,7 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 
 		switch data.Command(messages[1]) {
 		case data.CreatePage:
-			input := dto.PageInput{
+			input := dto.CreatePageInput{
 				PageID: messages[2],
 				URL:    "https://d3bhdfps5qyllw.cloudfront.net/org/63/63516e4f15e183b8925052964a58f077_1080x700_w.jpg",
 			}
