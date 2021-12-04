@@ -3,5 +3,6 @@ package data
 type Command string
 
 const (
-	Create Command = "create"
+	CreatePage Command = "create_page"
+	CreateDatabase Command = "create_database"
 )
