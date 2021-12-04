@@ -30,19 +30,19 @@ type Properties struct {
 	Title Title `json:"title"`
 }
 
-type PostRequest struct {
+type CreatePageRequest struct {
 	Parent     Parent     `json:"parent"`
 	Cover      Cover      `json:"cover"`
 	Properties Properties `json:"properties"`
 }
 
-type PostResponse struct {
+type CreatePageResponse struct {
 	ID     string `json:"id"`
 	Object string `json:"object"`
 	Cover  Cover  `json:"cover"`
 }
 
-type PostErrorResponse struct {
+type CreatePageErrorResponse struct {
 	Object  string `json:"object"`
 	Status  int    `json:"status"`
 	Code    string `json:"code"`

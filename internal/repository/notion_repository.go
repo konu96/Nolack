@@ -22,7 +22,7 @@ func NewNotionRepository(client NotionInterface) *NotionRepository {
 	}
 }
 
-func (r *NotionRepository) POST(page dto.PostRequest) (*dto.PostResponse, *dto.PostErrorResponse, error) {
+func (r *NotionRepository) CreatePage(page dto.CreatePageRequest) (*dto.CreatePageResponse, *dto.CreatePageErrorResponse, error) {
 	marshaledJSON, err := json.Marshal(page)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to marshal json: %w", err)
@@ -41,7 +41,7 @@ func (r *NotionRepository) POST(page dto.PostRequest) (*dto.PostResponse, *dto.P
 	}
 
 	if resp.StatusCode != 200 {
-		var errorResponse *dto.PostErrorResponse
+		var errorResponse *dto.CreatePageErrorResponse
 		if err := json.Unmarshal(body, errorResponse); err != nil {
 			return nil, nil, err
 		}
@@ -49,7 +49,7 @@ func (r *NotionRepository) POST(page dto.PostRequest) (*dto.PostResponse, *dto.P
 		return nil, errorResponse, err
 	}
 
-	var postResponse *dto.PostResponse
+	var postResponse *dto.CreatePageResponse
 	if err := json.Unmarshal(body, postResponse); err != nil {
 		return nil, nil, err
 	}

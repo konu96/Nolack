@@ -22,7 +22,7 @@ func NewCreatePageInteractor(slack *slack.Slack, NotionRepository repository.Not
 }
 
 func (i *CreateNotionPageInteractor) Exec(channel string) error {
-	page := dto.PostRequest{
+	page := dto.CreatePageRequest{
 		Parent: dto.Parent{
 			PageID: pageID,
 		},
@@ -42,7 +42,7 @@ func (i *CreateNotionPageInteractor) Exec(channel string) error {
 		},
 	}
 
-	if _, _, err := i.NotionRepository.POST(page); err != nil {
+	if _, _, err := i.NotionRepository.CreatePage(page); err != nil {
 		return fmt.Errorf("failed to missing post: %w", err)
 	}
 
