@@ -12,14 +12,14 @@ import (
 )
 
 type Controller struct {
-	VerifyURLInteractor     usecases.VerifyURLInteractor
-	CallbackEventInteractor usecases.CallbackEventInteractor
+	VerifyURLUseCase     usecases.VerifyURLUseCase
+	CallbackEventUseCase usecases.CallbackEventUseCase
 }
 
 func NewController(slack *slack.Slack) Controller {
 	return Controller{
-		VerifyURLInteractor: usecases.NewVerifyURLInteractor(),
-		CallbackEventInteractor: usecases.NewCallbackEventInteractor(
+		VerifyURLUseCase: usecases.NewVerifyURLInteractor(),
+		CallbackEventUseCase: usecases.NewCallbackEventInteractor(
 			repository.NewNotionRepository(notion.NewNotion()),
 			*usecases.NewNotifyInteractor(slack),
 		),
@@ -41,15 +41,15 @@ func (c *Controller) Exec(w http.ResponseWriter, r *http.Request) error {
 
 	switch event.Type {
 	case slackevents.URLVerification:
-		if err := c.VerifyURLInteractor.Exec(w, body); err != nil {
+		if err := c.VerifyURLUseCase.Exec(w, body); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			return fmt.Errorf("url verification: %w", err)
+			return fmt.Errorf("failed to url verification: %w", err)
 		}
 
 	case slackevents.CallbackEvent:
-		if err := c.CallbackEventInteractor.Exec(event); err != nil {
+		if err := c.CallbackEventUseCase.Exec(event); err != nil {
 			w.WriteHeader(err.StatusCode)
-			return fmt.Errorf("callback event: %w", err.Err)
+			return fmt.Errorf("failed to callback event: %w", err.Err)
 		}
 	}
 

@@ -4,6 +4,11 @@ tasks:
   run:
     cmds:
       - go run cmd/main.go
+
   ngrok:
     cmds:
       - ngrok http 8080
+
+  fmt:
+    cmds:
+      - go fmt ./...

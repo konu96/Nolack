@@ -2,9 +2,9 @@ package repository
 
 import (
 	"github.com/konu96/Nolack/internal/domain/entity"
-	notiondto "github.com/konu96/Nolack/internal/repository/dto/notion"
+	"github.com/konu96/Nolack/internal/repository/dto"
 )
 
 type NotionRepository interface {
-	CreatePage(page entity.Page) (*notiondto.CreatePageResponse, *notiondto.CreatePageErrorResponse, error)
+	CreatePage(page entity.Page) (*dto.CreatePageInput, *dto.CreatePageErrorResponse, error)
 }

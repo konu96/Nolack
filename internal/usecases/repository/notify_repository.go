@@ -1,7 +1,9 @@
 package repository
 
-import notifydto "github.com/konu96/Nolack/internal/repository/dto/notify"
+import (
+	"github.com/konu96/Nolack/internal/repository/dto"
+)
 
 type NotifyRepository interface {
-	Notify(input notifydto.NotifyInput) error
+	Notify(input dto.NotifyInput) error
 }

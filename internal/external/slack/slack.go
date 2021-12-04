@@ -1,7 +1,7 @@
 package slack
 
 import (
-	notifydto "github.com/konu96/Nolack/internal/repository/dto/notify"
+	notifydto "github.com/konu96/Nolack/internal/repository/dto"
 	"github.com/slack-go/slack"
 )
 

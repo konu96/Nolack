@@ -1,4 +1,4 @@
-package notifydto
+package dto
 
 type NotifyInput struct {
 	Channel string

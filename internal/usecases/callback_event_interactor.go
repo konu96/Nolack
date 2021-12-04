@@ -10,12 +10,19 @@ import (
 	"strings"
 )
 
+type CallbackEventUseCase interface {
+	Exec(event slackevents.EventsAPIEvent) *Error
+}
+
 type CallbackEventInteractor struct {
 	CreatePageInteractor CreateNotionPageInteractor
 }
 
-func NewCallbackEventInteractor(notionRepository repository.NotionRepository, slackInteractor NotifyInteractor) CallbackEventInteractor {
-	return CallbackEventInteractor{
+func NewCallbackEventInteractor(
+	notionRepository repository.NotionRepository,
+	slackInteractor NotifyInteractor,
+) *CallbackEventInteractor {
+	return &CallbackEventInteractor{
 		CreatePageInteractor: NewCreatePageInteractor(notionRepository, slackInteractor),
 	}
 }
@@ -31,6 +38,7 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 	switch event := innerEvent.Data.(type) {
 	case *slackevents.AppMentionEvent:
 		requestMessageCount := 3
+
 		messages := strings.Split(event.Text, " ")
 		if len(messages) < requestMessageCount {
 			return &Error{

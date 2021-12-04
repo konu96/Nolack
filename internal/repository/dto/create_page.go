@@ -1,6 +1,6 @@
-package notion_dto
+package dto
 
-type CreatePageResponse struct {
+type CreatePageInput struct {
 	ID     string `json:"id"`
 	Object string `json:"object"`
 }

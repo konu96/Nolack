@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+var PORT = ":8080"
+
 type Server struct {
 	controller interfaces.Controller
 }
@@ -27,8 +29,8 @@ func (s *Server) Run() error {
 
 	s.register()
 
-	log.Println("[INFO] Server listening")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	log.Println("[INFO] Server listening " + PORT)
+	if err := http.ListenAndServe(PORT, nil); err != nil {
 		return err
 	}
 	return nil

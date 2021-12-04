@@ -3,7 +3,7 @@ package usecases
 import (
 	"fmt"
 	"github.com/konu96/Nolack/internal/domain/entity"
-	notifydto "github.com/konu96/Nolack/internal/repository/dto/notify"
+	notifydto "github.com/konu96/Nolack/internal/repository/dto"
 	"github.com/konu96/Nolack/internal/usecases/dto"
 	"github.com/konu96/Nolack/internal/usecases/repository"
 )
@@ -13,9 +13,12 @@ type CreateNotionPageInteractor struct {
 	NotifyInteractor NotifyInteractor
 }
 
-func NewCreatePageInteractor(NotionRepository repository.NotionRepository, notifyInteractor NotifyInteractor) CreateNotionPageInteractor {
+func NewCreatePageInteractor(
+	notionRepository repository.NotionRepository,
+	notifyInteractor NotifyInteractor,
+) CreateNotionPageInteractor {
 	return CreateNotionPageInteractor{
-		NotionRepository: NotionRepository,
+		NotionRepository: notionRepository,
 		NotifyInteractor: notifyInteractor,
 	}
 }
