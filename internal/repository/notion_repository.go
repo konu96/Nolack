@@ -3,7 +3,8 @@ package repository
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/konu96/Nolack/internal/usecases/dto"
+	"github.com/konu96/Nolack/internal/domain/entity"
+	"github.com/konu96/Nolack/internal/repository/dto"
 	"io/ioutil"
 	"net/http"
 )
@@ -22,7 +23,7 @@ func NewNotionRepository(client NotionInterface) *NotionRepository {
 	}
 }
 
-func (r *NotionRepository) CreatePage(page dto.CreatePageRequest) (*dto.CreatePageResponse, *dto.CreatePageErrorResponse, error) {
+func (r *NotionRepository) CreatePage(page entity.Page) (*dto.CreatePageResponse, *dto.CreatePageErrorResponse, error) {
 	marshaledJSON, err := json.Marshal(page)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to marshal json: %w", err)

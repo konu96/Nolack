@@ -2,8 +2,8 @@ package usecases
 
 import (
 	"fmt"
+	"github.com/konu96/Nolack/internal/domain/entity"
 	"github.com/konu96/Nolack/internal/external/slack"
-	"github.com/konu96/Nolack/internal/usecases/dto"
 	"github.com/konu96/Nolack/internal/usecases/repository"
 )
 
@@ -22,25 +22,7 @@ func NewCreatePageInteractor(slack *slack.Slack, NotionRepository repository.Not
 }
 
 func (i *CreateNotionPageInteractor) Exec(channel string) error {
-	page := dto.CreatePageRequest{
-		Parent: dto.Parent{
-			PageID: pageID,
-		},
-		Cover: dto.Cover{
-			Type:     "external",
-			External: dto.External{URL: "https://d3bhdfps5qyllw.cloudfront.net/org/63/63516e4f15e183b8925052964a58f077_1080x700_w.jpg"},
-		},
-		Properties: dto.Properties{
-			Title: dto.Title{Title: []dto.TitleInTitle{
-				{
-					Type: "text",
-					Text: dto.TitleContent{
-						Content: "Sample page created by nolack",
-					},
-				},
-			}},
-		},
-	}
+	page := entity.NewPage(pageID, "https://d3bhdfps5qyllw.cloudfront.net/org/63/63516e4f15e183b8925052964a58f077_1080x700_w.jpg")
 
 	if _, _, err := i.NotionRepository.CreatePage(page); err != nil {
 		return fmt.Errorf("create page: %w", err)
