@@ -34,7 +34,7 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 		if len(message) < 2 {
 			return &Error{
 				StatusCode: http.StatusBadRequest,
-				err:        fmt.Errorf("missing argument: want 2 argumets but got %d", len(message)),
+				Err:        fmt.Errorf("missing argument: want 2 argumets but got %d", len(message)),
 			}
 		}
 
@@ -43,7 +43,7 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 			if err := i.CreatePageInteractor.Exec(event.Channel); err != nil {
 				return &Error{
 					StatusCode: http.StatusInternalServerError,
-					err:        err,
+					Err:        err,
 				}
 			}
 		}
