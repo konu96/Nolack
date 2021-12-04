@@ -18,8 +18,11 @@ type Controller struct {
 
 func NewController(slack *slack.Slack) Controller {
 	return Controller{
-		VerifyURLInteractor:     usecases.NewVerifyURLInteractor(),
-		CallbackEventInteractor: usecases.NewCallbackEventInteractor(slack, repository.NewNotionRepository(notion.NewNotion())),
+		VerifyURLInteractor: usecases.NewVerifyURLInteractor(),
+		CallbackEventInteractor: usecases.NewCallbackEventInteractor(
+			repository.NewNotionRepository(notion.NewNotion()),
+			*usecases.NewNotifyInteractor(slack),
+		),
 	}
 }
 

@@ -3,7 +3,6 @@ package usecases
 import (
 	"fmt"
 	"github.com/konu96/Nolack/internal/domain/data"
-	"github.com/konu96/Nolack/internal/external/slack"
 	"github.com/konu96/Nolack/internal/usecases/dto"
 	"github.com/konu96/Nolack/internal/usecases/repository"
 	"github.com/slack-go/slack/slackevents"
@@ -15,9 +14,9 @@ type CallbackEventInteractor struct {
 	CreatePageInteractor CreateNotionPageInteractor
 }
 
-func NewCallbackEventInteractor(slack *slack.Slack, notionRepository repository.NotionRepository) CallbackEventInteractor {
+func NewCallbackEventInteractor(notionRepository repository.NotionRepository, slackInteractor NotifyInteractor) CallbackEventInteractor {
 	return CallbackEventInteractor{
-		CreatePageInteractor: NewCreatePageInteractor(slack, notionRepository),
+		CreatePageInteractor: NewCreatePageInteractor(notionRepository, slackInteractor),
 	}
 }
 
