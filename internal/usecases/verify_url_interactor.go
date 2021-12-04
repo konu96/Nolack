@@ -19,13 +19,13 @@ func NewVerifyURLInteractor() *VerifyURLInteractor {
 }
 
 func (i *VerifyURLInteractor) Exec(w http.ResponseWriter, body []byte) error {
-	var res *slackevents.ChallengeResponse
-	if err := json.Unmarshal(body, &res); err != nil {
+	var response *slackevents.ChallengeResponse
+	if err := json.Unmarshal(body, &response); err != nil {
 		return fmt.Errorf("unmarshal verify url response: %w", err)
 	}
 
 	w.Header().Set("Content-Type", "text/plain")
-	if _, err := w.Write([]byte(res.Challenge)); err != nil {
+	if _, err := w.Write([]byte(response.Challenge)); err != nil {
 		return fmt.Errorf("write verify url response: %w", err)
 	}
 

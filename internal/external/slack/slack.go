@@ -1,7 +1,7 @@
 package slack
 
 import (
-	notifydto "github.com/konu96/Nolack/internal/repository/dto"
+	"github.com/konu96/Nolack/internal/repository/dto"
 	"github.com/slack-go/slack"
 )
 
@@ -15,7 +15,7 @@ func NewSlack(client *slack.Client) *Slack {
 	}
 }
 
-func (s *Slack) Notify(input notifydto.NotifyInput) error {
+func (s *Slack) Notify(input dto.NotifyInput) error {
 	if _, _, err := s.Client.PostMessage(input.Channel, slack.MsgOptionText(input.Text, true)); err != nil {
 		return err
 	}

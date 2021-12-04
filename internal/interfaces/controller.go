@@ -21,7 +21,7 @@ func NewController(slack *slack.Slack) Controller {
 		VerifyURLUseCase: usecases.NewVerifyURLInteractor(),
 		CallbackEventUseCase: usecases.NewCallbackEventInteractor(
 			repository.NewNotionRepository(notion.NewNotion()),
-			*usecases.NewNotifyInteractor(slack),
+			usecases.NewNotifyInteractor(slack),
 		),
 	}
 }

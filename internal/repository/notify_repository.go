@@ -2,11 +2,11 @@ package repository
 
 import (
 	"fmt"
-	notifydto "github.com/konu96/Nolack/internal/repository/dto"
+	"github.com/konu96/Nolack/internal/repository/dto"
 )
 
 type NotifyClient interface {
-	Notify(input notifydto.NotifyInput) error
+	Notify(input dto.NotifyInput) error
 }
 
 type NotifyRepository struct {
@@ -19,7 +19,7 @@ func NewNotifyRepository(client NotifyClient) *NotifyRepository {
 	}
 }
 
-func (r *NotifyRepository) Notify(input notifydto.NotifyInput) error {
+func (r *NotifyRepository) Notify(input dto.NotifyInput) error {
 	if err := r.Client.Notify(input); err != nil {
 		return fmt.Errorf("notify: %w", err)
 	}

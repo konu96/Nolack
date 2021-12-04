@@ -3,7 +3,8 @@ package usecases
 import (
 	"fmt"
 	"github.com/konu96/Nolack/internal/domain/data"
-	"github.com/konu96/Nolack/internal/usecases/dto"
+	repositorydto "github.com/konu96/Nolack/internal/repository/dto"
+	usecasesdto "github.com/konu96/Nolack/internal/usecases/dto"
 	"github.com/konu96/Nolack/internal/usecases/repository"
 	"github.com/slack-go/slack/slackevents"
 	"net/http"
@@ -15,15 +16,17 @@ type CallbackEventUseCase interface {
 }
 
 type CallbackEventInteractor struct {
-	CreatePageInteractor CreateNotionPageInteractor
+	CreateNotionPageUseCase CreateNotionPageUseCase
+	NotifyUseCase           NotifyUseCase
 }
 
 func NewCallbackEventInteractor(
 	notionRepository repository.NotionRepository,
-	slackInteractor NotifyInteractor,
+	notifyInteractor *NotifyInteractor,
 ) *CallbackEventInteractor {
 	return &CallbackEventInteractor{
-		CreatePageInteractor: NewCreatePageInteractor(notionRepository, slackInteractor),
+		CreateNotionPageUseCase: NewCreatePageInteractor(notionRepository, notifyInteractor),
+		NotifyUseCase:           notifyInteractor,
 	}
 }
 
@@ -49,11 +52,15 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 
 		switch data.Command(messages[1]) {
 		case data.CreatePage:
-			input := dto.CreatePageInput{
+			input := usecasesdto.CreatePageInput{
 				PageID: messages[2],
 				URL:    "https://d3bhdfps5qyllw.cloudfront.net/org/63/63516e4f15e183b8925052964a58f077_1080x700_w.jpg",
 			}
-			if err := i.CreatePageInteractor.Exec(event.Channel, input); err != nil {
+			if err := i.CreateNotionPageUseCase.Exec(event.Channel, input); err != nil {
+				err := i.NotifyUseCase.Exec(repositorydto.NotifyInput{
+					Channel: event.Channel,
+					Text:    err.Error(),
+				})
 				return &Error{
 					StatusCode: http.StatusInternalServerError,
 					Err:        err,
