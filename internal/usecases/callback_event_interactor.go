@@ -31,7 +31,7 @@ func (i *CallbackEventInteractor) Exec(event slackevents.EventsAPIEvent) *Error 
 
 	switch event := innerEvent.Data.(type) {
 	case *slackevents.AppMentionEvent:
-		requestMessageCount := 4
+		requestMessageCount := 3
 		messages := strings.Split(event.Text, " ")
 		if len(messages) < requestMessageCount {
 			return &Error{
