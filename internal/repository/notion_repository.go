@@ -41,18 +41,19 @@ func (r *NotionRepository) CreatePage(page dto.CreatePageRequest) (*dto.CreatePa
 	}
 
 	if resp.StatusCode != 200 {
-		var errorResponse *dto.CreatePageErrorResponse
-		if err := json.Unmarshal(body, errorResponse); err != nil {
+		var errorResponse dto.CreatePageErrorResponse
+		if err := json.Unmarshal(body, &errorResponse); err != nil {
 			return nil, nil, err
 		}
 
-		return nil, errorResponse, err
+		return nil, &errorResponse, err
 	}
 
-	var postResponse *dto.CreatePageResponse
-	if err := json.Unmarshal(body, postResponse); err != nil {
+	var postResponse dto.CreatePageResponse
+	if err := json.Unmarshal(body, &postResponse); err != nil {
+		fmt.Println(string(body))
 		return nil, nil, err
 	}
 
-	return postResponse, nil, nil
+	return &postResponse, nil, nil
 }

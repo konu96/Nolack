@@ -22,7 +22,7 @@ func NewServer(controller interfaces.Controller) Server {
 func (s *Server) Run() error {
 	env := os.Getenv("GO_ENV")
 	if err := godotenv.Load(fmt.Sprintf("./%s.env", env)); err != nil {
-		return fmt.Errorf("%s.env not found", env)
+		panic("not found .env file")
 	}
 
 	s.register()
@@ -36,6 +36,8 @@ func (s *Server) Run() error {
 
 func (s *Server) register() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		s.controller.Exec(w, r)
+		if err := s.controller.Exec(w, r); err != nil {
+			log.Println(err)
+		}
 	})
 }

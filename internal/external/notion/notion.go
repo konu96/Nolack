@@ -3,7 +3,6 @@ package notion
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 )
@@ -24,7 +23,7 @@ func NewNotion() Notion {
 func (n Notion) POST(data []byte) (*http.Response, error) {
 	request, err := http.NewRequest("POST", Page, bytes.NewReader(data))
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("missing create new request: %w", err)
 	}
 
 	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("NOTION_TOKEN")))
@@ -33,7 +32,7 @@ func (n Notion) POST(data []byte) (*http.Response, error) {
 
 	resp, err := n.Client.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("missing post: %w", err)
 	}
 	return resp, err
 }
