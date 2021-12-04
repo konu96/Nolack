@@ -1,31 +1,27 @@
 package usecases
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/konu96/Nolack/internal/external/slack"
 	"github.com/konu96/Nolack/internal/usecases/dto"
+	"github.com/konu96/Nolack/internal/usecases/repository"
 )
 
 const pageID = "263a6b171e8049acbecb821b492bfad3"
 
-type NotionInterface interface {
-	POST(data []byte) (*dto.PostResponse, error)
+type CreateNotionPageInteractor struct {
+	Slack            *slack.Slack
+	NotionRepository repository.NotionRepository
 }
 
-type CreatePageInteractor struct {
-	Slack  slack.Slack
-	Notion NotionInterface
-}
-
-func NewCreatePageInteractor(slack slack.Slack, notion NotionInterface) CreatePageInteractor {
-	return CreatePageInteractor{
+func NewCreatePageInteractor(slack *slack.Slack, NotionRepository repository.NotionRepository) CreateNotionPageInteractor {
+	return CreateNotionPageInteractor{
 		slack,
-		notion,
+		NotionRepository,
 	}
 }
 
-func (i *CreatePageInteractor) Exec(channel string) error {
+func (i *CreateNotionPageInteractor) Exec(channel string) error {
 	page := dto.PostRequest{
 		Parent: dto.Parent{
 			PageID: pageID,
@@ -46,12 +42,7 @@ func (i *CreatePageInteractor) Exec(channel string) error {
 		},
 	}
 
-	marshaledJSON, err := json.Marshal(page)
-	if err != nil {
-		return fmt.Errorf("failed to marshal json: %w", err)
-	}
-
-	if _, err := i.Notion.POST(marshaledJSON); err != nil {
+	if _, _, err := i.NotionRepository.POST(page); err != nil {
 		return fmt.Errorf("failed to missing post: %w", err)
 	}
 

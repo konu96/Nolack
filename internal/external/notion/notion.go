@@ -2,10 +2,7 @@ package notion
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/konu96/Nolack/internal/usecases/dto"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +21,7 @@ func NewNotion() Notion {
 	}
 }
 
-func (n Notion) POST(data []byte) (*dto.PostResponse, error) {
+func (n Notion) POST(data []byte) (*http.Response, error) {
 	request, err := http.NewRequest("POST", NOTION_PAGE, bytes.NewReader(data))
 	if err != nil {
 		log.Fatal(err)
@@ -38,17 +35,5 @@ func (n Notion) POST(data []byte) (*dto.PostResponse, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var page dto.PostResponse
-	if err := json.Unmarshal(body, &page); err != nil {
-		return nil, err
-	}
-
-	return &page, nil
+	return resp, err
 }

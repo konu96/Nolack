@@ -8,8 +8,8 @@ type Slack struct {
 	Client *slack.Client
 }
 
-func NewSlack(client *slack.Client) Slack {
-	return Slack{
+func NewSlack(client *slack.Client) *Slack {
+	return &Slack{
 		Client: client,
 	}
 }

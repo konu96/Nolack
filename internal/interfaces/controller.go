@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/konu96/Nolack/internal/external/notion"
 	"github.com/konu96/Nolack/internal/external/slack"
+	"github.com/konu96/Nolack/internal/repository"
 	"github.com/konu96/Nolack/internal/usecases"
 	"github.com/slack-go/slack/slackevents"
 	"io/ioutil"
@@ -16,10 +17,10 @@ type Controller struct {
 	CallbackEventInteractor usecases.CallbackEventInteractor
 }
 
-func NewController(slack slack.Slack) Controller {
+func NewController(slack *slack.Slack) Controller {
 	return Controller{
 		VerifyURLInteractor:     usecases.NewVerifyURLInteractor(),
-		CallbackEventInteractor: usecases.NewCallbackEventInteractor(slack, notion.NewNotion()),
+		CallbackEventInteractor: usecases.NewCallbackEventInteractor(slack, repository.NewNotionRepository(notion.NewNotion())),
 	}
 }
 
