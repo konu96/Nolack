@@ -1,8 +1,14 @@
 version: '3'
 
+env:
+  ENV: local
+
+dotenv: ['{{.ENV}}.env']
+
 tasks:
   run:
     cmds:
+      - 'GO_ENV={{.GO_ENV}}'
       - go run cmd/main.go
 
   ngrok:
